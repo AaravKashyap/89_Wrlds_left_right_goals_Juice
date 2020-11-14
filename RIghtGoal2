@@ -1,0 +1,333 @@
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Controller1          controller                    
+// FrontLeft            motor         16              
+// FrontRight           motor         6               
+// RearLeft             motor         14              
+// RearRight            motor         1               
+// RightIntake          motor         9               
+// LeftIntake           motor         3               
+// Motor4               motor         4               
+// Motor5               motor         5               
+// Inertial12           inertial      8               
+// EncoderAB            encoder       A, B            
+// EncoderCD            encoder       C, D            
+// EncoderGH            encoder       G, H            
+// LimitSwitchE         limit         E               
+// Vision18             vision        18              
+// ---- END VEXCODE CONFIGURED DEVICES ----
+#include <ctime>
+#include "vex.h"
+#include <iostream>
+using namespace vex;
+
+vex::competition Competition; 
+
+ 
+// define your global instances of motors and other devices here
+/*---------------------------------------------------------------------------*/
+/* Pre-Autonomous Functions */
+/* */
+/* You may want to perform some actions before the competition starts. */
+/* D
+\\ motor RearLeft 12.56, 16, 16, distanceUnits::in );o them in the following function. You must return from this function */
+/* or the autonomous and usercontrol tasks will not be started. This */
+/* function is only called once after the V5 has been powered on and */
+/* not every time that the robot is disabled. */
+/*---------------------------------------------------------------------------*/
+void pre_auton(void) {
+// Initializing Robot Configuration. DO NOT REMOVE!
+vexcodeInit();
+// All activities that occur before the competition starts
+// Example: clearing encoders, setting servo positions, ...
+}
+
+void IntakeRollers() {
+ RightIntake.setVelocity(100, percent);
+ Motor4.setVelocity(60, percent);
+ Motor5.setVelocity(100, percent);
+ RightIntake.spinFor(forward, 400, degrees, false);
+ Motor5.spinFor(forward, 2000, degrees, false);
+ Motor4.spinFor(forward, 1060, degrees, true);
+
+ Motor4.stop();
+ Motor5.stop();
+ RightIntake.stop();
+}
+
+void TurnBack(){
+EncoderAB.setPosition(0, degrees);
+EncoderCD.setPosition(0, degrees);
+bool flag = false;
+ FrontLeft.setVelocity(60, percent);
+ RearLeft.setVelocity(60, percent);
+ FrontRight.setVelocity(60, percent);
+ RearRight.setVelocity(60, percent);
+ LeftIntake.setVelocity(100, percent);
+
+FrontRight.spin(forward);
+RearRight.spin(forward); 
+FrontLeft.spin(reverse);
+RearLeft.spin(reverse);
+LeftIntake.spin(reverse);
+
+ while(flag == false){
+ int left = EncoderAB.position(degrees);
+ int right = EncoderGH.position(degrees);
+ if(left >= 1250){
+ flag = true;
+ if(right >= 1250){
+ flag = true;
+ }
+ }
+ wait(0.001, seconds); 
+ }
+
+ FrontLeft.stop();
+ FrontRight.stop();
+ RearLeft.stop();
+ RearRight.stop();
+ LeftIntake.stop();
+}
+
+void TurnRightOne(int goalAngle){
+ bool flag = false;
+
+ FrontRight.setVelocity(100, percent);
+ RearRight.setVelocity(100, percent);
+ FrontLeft.setVelocity(100, percent);
+ RearLeft.setVelocity(100, percent);
+
+ FrontRight.spin(forward);
+ RearRight.spin(forward);
+ FrontLeft.spin(forward);
+ RearLeft.spin(forward);
+
+ while(flag == false){
+ int currAngle = Inertial12.heading();
+
+ if(currAngle < goalAngle + 3 
+ && currAngle > goalAngle - 3){
+ flag = true;
+ }
+ wait(0.001, seconds); 
+ }
+
+ FrontRight.stop();
+ RearRight.stop();
+ FrontLeft.stop();
+ RearLeft.stop();
+}
+
+void TurnFwd(){
+ EncoderAB.setPosition(0, degrees);
+ EncoderGH.setPosition(0, degrees);
+ bool flag = false;
+ FrontLeft.setVelocity(40, percent);
+ RearLeft.setVelocity(40, percent);
+ FrontRight.setVelocity(40, percent);
+ RearRight.setVelocity(40, percent);
+ LeftIntake.setVelocity(100, percent);
+ RightIntake.setVelocity(100, percent);
+
+ FrontRight.spin(reverse);
+ RearRight.spin(reverse);
+ FrontLeft.spin(forward);
+ RearLeft.spin(forward);
+ RightIntake.spin(reverse);
+ LeftIntake.spin(forward);
+
+ while(flag == false){
+ int left = -EncoderAB.position(degrees);
+ int right = -EncoderGH.position(degrees);
+ if(left >= 550){
+ flag = true;
+ if(right >= 550){
+ flag = true;
+ }
+ }
+ wait(0.001, seconds); 
+ }
+
+
+ FrontLeft.stop();
+ FrontRight.stop();
+ RearLeft.stop();
+ RearRight.stop();
+ LeftIntake.stop();
+ RightIntake.stop();
+}
+
+void score(){
+ Motor4.setVelocity(40, percent);
+ Motor5.setVelocity(100, percent);
+ LeftIntake.setVelocity(100, percent);
+ RightIntake.setVelocity(100, percent);
+ LeftIntake.spinFor(forward, 360, degrees, false);
+ RightIntake.spinFor(reverse, 360, degrees, false);
+ Motor4.spinFor(forward, 2000, degrees, false);
+ Motor5.spinFor(forward, 4000, degrees, true);
+
+ LeftIntake.stop();
+ RightIntake.stop();
+ Motor4.stop();
+ Motor5.stop();
+}
+
+void Back(){
+EncoderAB.setPosition(0, degrees);
+EncoderCD.setPosition(0, degrees);
+bool flag = false;
+ FrontLeft.setVelocity(60, percent);
+ RearLeft.setVelocity(60, percent);
+ FrontRight.setVelocity(60, percent);
+ RearRight.setVelocity(60, percent);
+ RightIntake.setVelocity(100, percent);
+ LeftIntake.setVelocity(100, percent);
+
+FrontRight.spin(forward);
+RearRight.spin(forward); 
+FrontLeft.spin(reverse);
+RearLeft.spin(reverse);
+RightIntake.spin(forward);
+LeftIntake.spin(reverse);
+
+ while(flag == false){
+ int left = EncoderAB.position(degrees);
+ int right = EncoderGH.position(degrees);
+ if(left >= 300){
+ flag = true;
+ if(right >= 300){
+ flag = true;
+ }
+ }
+ wait(0.001, seconds); 
+ }
+
+ FrontLeft.stop();
+ FrontRight.stop();
+ RearLeft.stop();
+ RearRight.stop();
+ RightIntake.stop();
+ LeftIntake.stop();
+}
+
+/*---------------------------------------------------------------------------*/
+/* */
+/* User Control Task */
+/* */
+/* This task is used to control your robot during the user control phase of */
+/* a VEX Competition. */
+/* */
+/* You must modify the code to add your own robot specific commands here. */
+/*---------------------------------------------------------------------------*/
+
+void drive(){
+ 
+while(true){ // infinite loop
+ Brain.Screen.clearLine();
+ Vision18.takeSnapshot(Vision18__SIG_BLUE);
+
+ if (Vision18.takeSnapshot(Vision18__SIG_BLUE)) {
+ Brain.Screen.print("Blue detected");
+ }
+
+ Brain.Screen.print(EncoderAB.position(degrees));
+ 
+ if (Controller1.ButtonL2.pressing()) {
+
+ Vision18.takeSnapshot(Vision18__SIG_BLUE);
+ if (Vision18.takeSnapshot(Vision18__SIG_BLUE)) {
+
+ Motor5.setVelocity(60, percent);
+ Motor4.setVelocity(60, percent);
+
+ Motor5.spinFor(reverse, 1300, degrees, false);
+ Motor4.spinFor(forward, 1300, degrees, true);
+
+ }
+ }
+ 
+ int left;
+ int right;
+ int p;
+ int v;
+ 
+ left = Controller1.Axis4.value();
+ right = Controller1.Axis2.value();
+ p = Controller1.Axis1.value();
+ v = Controller1.Axis3.value();
+
+ if (left <= 5 && left >= -5){
+ left = 0;
+ }
+
+ if (right <= 5 && right >= -5){
+ right = 0;
+ }
+
+ if (p <= 5 && p >= -5){
+ p = 0;
+ }
+
+ if (v <= 5 && v >= -5){
+ v = 0;
+ }
+ 
+ if (isnan(left)){
+ left = 0;
+ }
+
+ if (isnan(v)){
+ v = 0;
+ }
+
+ if (isnan(p)){
+ p = 0;
+ }
+ FrontLeft.spin(vex::directionType::fwd, (int)((v + left + p)/127.0*12.0), vex::voltageUnits::volt);
+ FrontRight.spin(vex::directionType::fwd, (int)((-v + left + p)/127.0*12.0), vex::voltageUnits::volt);
+ RearLeft.spin(vex::directionType::fwd, (int)((v - left + p)/127.0*12.0), vex::voltageUnits::volt);
+ RearRight.spin(vex::directionType::fwd, (int)((-v - left + p)/127.0*12.0), vex::voltageUnits::volt);
+ 
+ LeftIntake.spin(vex::directionType::rev, Controller1.ButtonL1.pressing()*127 -Controller1.ButtonR2.pressing()*127, vex::velocityUnits::pct); //Sets the left motor power to R2
+ RightIntake.spin(vex::directionType::fwd, Controller1.ButtonL1.pressing()*127 -Controller1.ButtonR2.pressing()*127, vex::velocityUnits::pct); //Sets the right motor power to R2
+ Motor4.spin(vex::directionType::fwd, Controller1.ButtonL2.pressing()*10.0, vex::voltageUnits::volt); //Sets the right motor power to L2
+ Motor5.spin(vex::directionType::fwd, Controller1.ButtonL2.pressing()*12.0 -Controller1.ButtonR1.pressing()*12.0, vex::voltageUnits::volt); //Sets the right motor power to L2
+
+ wait(1, msec);
+ }
+}
+
+//
+// Main will set up the competition functions and callbacks.
+//
+
+void autonomous(){
+wait(2, seconds);
+ IntakeRollers();
+ TurnBack();
+ TurnRightOne(60);
+ TurnFwd();
+ score();
+ Back();
+ }
+
+int main() {
+ Competition.autonomous(autonomous);
+ Competition.drivercontrol(drive);
+
+
+//Set up callbacks for autonomous and driver control periods.
+
+ 
+// Run the pre-autonomous function.
+
+
+//Set up callbacks for autonomous and driver control periods.
+ 
+// Run the pre-autonomous function.
+//
+// Prevent main from exiting with an infinite loop.
+ FrontLeft.stop();
